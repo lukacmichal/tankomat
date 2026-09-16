@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nastavenia appky sa nezálohujú a neprenášajú na iný telefón.
+
+  Predtým tu bol `<include>` — presný opak: DataStore s heslom k NAS-u sa
+  výslovne pridával do zálohy aj do prenosu. `allowBackup="false"` rieši zálohu
+  do cloudu, ale device-transfer (Android 12+) sa rozhoduje tu, takže bez tejto
+  zmeny by sa nastavenia aj tak skopírovali na nový telefón.
+
+  Stratí sa len pohodlie: spotreba, mestá a prihlásenie na NAS sa po inštalácii
+  nastavia znova.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="file" path="datastore" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="file" path="datastore" />
+    </device-transfer>
+</data-extraction-rules>

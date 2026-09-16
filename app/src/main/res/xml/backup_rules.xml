@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pravidlá pre Android 11 a staršie (`android:fullBackupContent`).
+  Novšie verzie sa riadia `data_extraction_rules.xml`.
+
+  Predtým tu bol `<include>` DataStore priečinka, teda heslo k NAS-u sa
+  výslovne posielalo do zálohy. Teraz je vylúčené — a `allowBackup="false"`
+  v manifeste to aj tak vypína celé; toto je poistka, keby sa príznak
+  niekedy vrátil na `true`.
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="." />
+    <exclude domain="file" path="datastore" />
+</full-backup-content>
