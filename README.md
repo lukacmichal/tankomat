@@ -12,6 +12,22 @@ ranked with its own saving or loss and the reason for it.
 
 Android · Kotlin · Jetpack Compose · minSdk 26 · 55 unit tests
 
+## What it looks like
+
+| Worth it | Not worth it | Every station, ranked | Settings |
+|---|---|---|---|
+| <img src="docs/screenshots/verdict-worth-it.png" alt="Green verdict: it is worth driving over" width="190"> | <img src="docs/screenshots/verdict-not-worth-it.png" alt="Red verdict: fill up at home" width="190"> | <img src="docs/screenshots/stations.png" alt="List of stations with the saving or loss on each" width="190"> | <img src="docs/screenshots/settings.png" alt="Fuel type, consumption, how many litres to count, and the list of Czech towns" width="190"> |
+
+The red verdict does not stop at "no". It says from how many litres the same
+trip would start to pay off — 156.5 l here, against the 10 l the settings are
+asking about — so the answer changes with the tank, not with the mood.
+
+The interface is Slovak; the app was written for one commute across the
+Slovak-Czech border. The shots were taken from this public copy, so the
+kilometres are the placeholder table described below, the Slovak reference city
+is `domovske-mesto`, and the Czech prices are the ones saved as test fixtures in
+[`app/src/test/resources/fixtures/`](app/src/test/resources/fixtures).
+
 ---
 
 ## Why this exists
