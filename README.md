@@ -201,9 +201,9 @@ it user-triggered, plus the few hundred bytes of the update check on the local
 network. The app tracks how much data it has transferred and shows it split
 between Wi-Fi and mobile.
 
-## One of eight
+## One of many
 
-Tankomat is not a standalone app but one of eight built to a written shared
+Tankomat is not a standalone app but one of many built to a written shared
 standard: the same header, the same pull-to-refresh, the same settings shape,
 the same version footer, the same self-update mechanism, byte-identical icon
 files. An English condensation of that standard — including the two
