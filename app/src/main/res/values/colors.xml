@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- App ikonka (adaptive icon) — rovnaká paleta ako v Theme.kt/Color.kt -->
+    <color name="ic_launcher_background">#0F3D29</color>
+    <color name="ic_launcher_foreground_fill">#F7F2E7</color>
+</resources>

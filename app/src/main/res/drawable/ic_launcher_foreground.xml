@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Zjednodušená silueta pumpy: telo + pätka + hadica s pištoľou + okienko displeja. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Telo pumpy: x 33-75, y 28-84 -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground_fill"
+        android:pathData="M39,28 h30 a6,6 0 0 1 6,6 v44 a6,6 0 0 1 -6,6 h-30 a6,6 0 0 1 -6,-6 v-44 a6,6 0 0 1 6,-6 z" />
+
+    <!-- Pätka: x 31-77, y 84-92 -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground_fill"
+        android:pathData="M33,84 h42 a2,2 0 0 1 2,2 v4 a2,2 0 0 1 -2,2 h-42 a2,2 0 0 1 -2,-2 v-4 a2,2 0 0 1 2,-2 z" />
+
+    <!-- Hadica: zvislá časť (x 66-72, y 18-34) -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground_fill"
+        android:pathData="M66,18 h6 v16 h-6 z" />
+
+    <!-- Hadica: vodorovná časť (x 66-82, y 18-24) -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground_fill"
+        android:pathData="M66,18 h16 v6 h-16 z" />
+
+    <!-- Pištoľ na konci hadice: x 75-87, y 14-28 -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground_fill"
+        android:pathData="M78,14 h6 a3,3 0 0 1 3,3 v8 a3,3 0 0 1 -3,3 h-6 a3,3 0 0 1 -3,-3 v-8 a3,3 0 0 1 3,-3 z" />
+
+    <!-- Displej (okienko v tele pumpy — vyplnené farbou pozadia) -->
+    <path
+        android:fillColor="@color/ic_launcher_background"
+        android:pathData="M45,36 h18 a2,2 0 0 1 2,2 v12 a2,2 0 0 1 -2,2 h-18 a2,2 0 0 1 -2,-2 v-12 a2,2 0 0 1 2,-2 z" />
+</vector>

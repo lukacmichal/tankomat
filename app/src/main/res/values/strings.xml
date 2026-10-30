@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tankomat</string>
+    <string name="title_main">Tankovať v ČR?</string>
+    <string name="title_settings">Nastavenia</string>
+    <string name="action_refresh">Obnoviť ceny</string>
+    <string name="action_settings">Nastavenia</string>
+    <string name="loading">Sťahujem ceny…</string>
+    <string name="error_network">Nepodarilo sa stiahnuť ceny. Skontroluj pripojenie.</string>
+    <string name="last_updated">Aktualizované: %1$s</string>
+    <string name="exchange_rate">Kurz ČNB: 1 EUR = %1$s CZK</string>
+
+    <!-- Settings -->
+    <string name="settings_fuel_type">Druh paliva</string>
+    <string name="settings_consumption">Spotreba (l/100 km)</string>
+    <string name="settings_tank_volume">Objem tankovania (l)</string>
+    <string name="settings_home_price">Domáca cena (EUR/l)</string>
+    <string name="settings_home_price_hint">Necháva prázdne = scrape Dalioil domovské mesto</string>
+    <string name="settings_cz_towns">CZ mestá (mbenzin.cz slug + km od domu)</string>
+    <string name="settings_min_savings">Minimálna úspora (EUR/tank) na zobrazenie</string>
+    <string name="add_town">Pridať mesto</string>
+    <string name="remove">Odstrániť</string>
+    <string name="save">Uložiť</string>
+
+    <!-- Cards -->
+    <string name="savings_per_tank">Úspora: %1$s €/tank</string>
+    <string name="cz_price_label">CZ cena: %1$s Kč/l (≈ %2$s €/l)</string>
+    <string name="distance_label">Vzdialenosť: %1$s km tam-späť</string>
+    <string name="extra_fuel_cost">Náklady na cestu: %1$s €</string>
+    <string name="loss">Strata</string>
+    <string name="profit">Úspora</string>
+    <string name="up_need_perm">Najprv povoľ „Inštalovať neznáme aplikácie", potom skús znova.</string>
+</resources>

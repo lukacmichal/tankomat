@@ -1,0 +1,125 @@
+{
+ "markers": [
+  {
+   "id": "18019",
+   "lat": 49.102476,
+   "lng": 18.025969,
+   "name": "Trako",
+   "price": 47.5,
+   "fresh": "25.10.2026",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/Brumov/Trako-Kloboucka-1397/18019",
+   "chain": "Trako"
+  },
+  {
+   "id": "17010",
+   "lat": 49.146711,
+   "lng": 18.021303,
+   "name": "EuroOil",
+   "price": 47.9,
+   "fresh": "Dnes",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/Valasske-Klobouky/EuroOil-Cyrilometodejska-666/17010",
+   "chain": "EuroOil"
+  },
+  {
+   "id": "18584",
+   "lat": 49.146506,
+   "lng": 18.020023,
+   "name": "ČS Saba",
+   "price": 47.2,
+   "fresh": "25.10.2026",
+   "ccs": false,
+   "url": "/Ceny-benzinu-a-nafty/Valasske-Klobouky/CS-Saba-Cyrilometodejska/18584",
+   "chain": "ČS Saba"
+  },
+  {
+   "id": "16800",
+   "lat": 49.147689,
+   "lng": 18.022147,
+   "name": "Orlen",
+   "price": 47.9,
+   "fresh": "26.10.2026",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/Valasske-Klobouky/Orlen-Cyrilometodejska-947/16800",
+   "chain": "Orlen"
+  },
+  {
+   "id": "17412",
+   "lat": 49.037068,
+   "lng": 17.800654,
+   "name": "Blok",
+   "price": 48.2,
+   "fresh": "15.10.2026",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/Bojkovice/Blok-Nadrazni-953/17412",
+   "chain": "Blok"
+  },
+  {
+   "id": "17787",
+   "lat": 49.304749,
+   "lng": 18.097903,
+   "name": "Elko Oil",
+   "price": 48.5,
+   "fresh": "6.10.2026",
+   "ccs": false,
+   "url": "/Ceny-benzinu-a-nafty/Huslenky/Elko-Oil-Huslenky-662/17787",
+   "chain": "Elko Oil"
+  },
+  {
+   "id": "18692",
+   "lat": 49.146443,
+   "lng": 17.803513,
+   "name": "Dobrá benzínka",
+   "price": 48.1,
+   "fresh": "Včera",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/Horni-Lhota/Dobra-benzinka-/18692",
+   "chain": "Dobrá benzínka"
+  },
+  {
+   "id": "18485",
+   "lat": 49.212648,
+   "lng": 17.809188,
+   "name": "Tank ONO",
+   "price": 46.9,
+   "fresh": "Dnes",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/Zadverice/Tank-ONO-Zadverice-427/18485",
+   "chain": "Tank ONO"
+  },
+  {
+   "id": "17869",
+   "lat": 49.213483,
+   "lng": 17.834305,
+   "name": "Alitron",
+   "price": 45.8,
+   "fresh": "24.10.2026",
+   "ccs": false,
+   "url": "/Ceny-benzinu-a-nafty/Vizovice/Alitron-Razov-1253/17869",
+   "chain": "Alitron"
+  },
+  {
+   "id": "17905",
+   "lat": 49.171432,
+   "lng": 17.639865,
+   "name": "PH-Mobil",
+   "price": 47.9,
+   "fresh": "25.10.2026",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/Bohuslavice-u-Zlina/PH-Mobil-Bohuslavice-u-Zlina-226-silnice-497/17905",
+   "chain": "PH-Mobil"
+  },
+  {
+   "id": "17266",
+   "lat": 50.21787,
+   "lng": 12.176793,
+   "name": "F1 Gas",
+   "price": 48.9,
+   "fresh": "Včera",
+   "ccs": true,
+   "url": "/Ceny-benzinu-a-nafty/As/F1-Gas-Selbska-152732/17266",
+   "chain": "F1 Gas"
+  }
+ ]
+}
