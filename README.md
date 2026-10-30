@@ -77,7 +77,7 @@ precise to coarse and **always reports which level answered**
 
 | Level | Where the number comes from | Shown as |
 |---|---|---|
-| 1 | a distance you typed in for that station | as typed |
+| 1 | a distance you typed in for that station (from either tab; stored once, used in both) | as typed |
 | 2 | the station in the table | measured |
 | 3 | a car route to the station's coordinates (OSRM) | measured |
 | 4 | the road distance to its municipality in the table | `≈ … (estimate)` |

@@ -1,5 +1,6 @@
 package sk.lukac.tankomat.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,16 +8,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import sk.lukac.tankomat.data.model.CzCenaRiadok
@@ -32,9 +38,13 @@ import java.util.Locale
 /**
  * Záložka „CZ ceny": pumpy z benzin.cz v okruhu zoradené podľa vzdialenosti,
  * pri každej cena a deň nahlásenia. Bez SK ceny a bez výpočtu úspory.
+ *
+ * Kilometre sa dajú opraviť aj odtiaľto ([onEditDistance]) — ten istý dialóg
+ * a ten istý zápis ako v Porovnaní, takže stačí raz. Jediné miesto pre pumpu,
+ * ku ktorej appka cestu nepozná: v Porovnaní taká nie je.
  */
 @Composable
-internal fun CzCenyContent(state: UiState.Ready) {
+internal fun CzCenyContent(state: UiState.Ready, onEditDistance: (CzCenaRiadok) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(12.dp),
@@ -67,13 +77,13 @@ internal fun CzCenyContent(state: UiState.Ready) {
                 )
             }
         } else {
-            items(state.czCeny, key = { it.station.kluc }) { CzCenaCard(it) }
+            items(state.czCeny, key = { it.station.kluc }) { CzCenaCard(it, onEditDistance) }
         }
     }
 }
 
 @Composable
-private fun CzCenaCard(r: CzCenaRiadok) {
+private fun CzCenaCard(r: CzCenaRiadok, onEditDistance: (CzCenaRiadok) -> Unit) {
     val tlmene = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -102,17 +112,33 @@ private fun CzCenaCard(r: CzCenaRiadok) {
                     )
                 }
                 val km = r.oneWayKm?.let { kmFmt.format(it) }
-                Text(
-                    text = when (r.distanceSource) {
-                        null -> "cestu sa zatiaľ nepodarilo zistiť"
-                        DistanceSource.MANUAL -> "$km km (ručne)"
-                        DistanceSource.MEASURED, DistanceSource.ROUTED -> "$km km"
-                        DistanceSource.VILLAGE -> "≈ $km km (podľa obce)"
-                        DistanceSource.CITY_FALLBACK -> "≈ $km km (podľa mesta)"
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = tlmene,
-                )
+                // Celý riadok s kilometrami je tlačidlo, rovnako ako v Porovnaní.
+                val (kmText, kmColor) = when (r.distanceSource) {
+                    null -> "cesta nezistená — zadaj ručne" to WarnOrange
+                    DistanceSource.MANUAL -> "$km km (ručne)" to MaterialTheme.colorScheme.primary
+                    DistanceSource.MEASURED, DistanceSource.ROUTED -> "$km km" to tlmene
+                    DistanceSource.VILLAGE -> "≈ $km km (podľa obce)" to tlmene
+                    DistanceSource.CITY_FALLBACK -> "≈ $km km (podľa mesta)" to tlmene
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(top = 2.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .clickable { onEditDistance(r) },
+                ) {
+                    Text(
+                        text = kmText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = kmColor,
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Upraviť vzdialenosť",
+                        tint = kmColor.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(start = 6.dp).size(15.dp),
+                    )
+                }
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(

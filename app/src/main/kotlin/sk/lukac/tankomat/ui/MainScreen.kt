@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import sk.lukac.tankomat.R
+import sk.lukac.tankomat.data.model.CzStation
 import sk.lukac.tankomat.data.model.DistanceSource
 import sk.lukac.tankomat.data.model.PriceFreshness
 import sk.lukac.tankomat.data.model.StationSavings
@@ -81,7 +82,7 @@ fun MainScreen(
     val update by vm.updateState.collectAsState()
 
     /** Pumpa, ktorej sa práve prepisuje vzdialenosť; null = dialóg je zavretý. */
-    var upravovana by remember { mutableStateOf<StationSavings?>(null) }
+    var upravovana by remember { mutableStateOf<UpravaKm?>(null) }
 
     var zalozka by rememberSaveable { mutableIntStateOf(0) }
     // Vypnutá záložka „CZ ceny" v Nastaveniach nesmie nechať index mimo.
@@ -161,30 +162,42 @@ fun MainScreen(
                 }
                 is UiState.Error -> ErrorMessage(s.message, onRetry = { vm.refresh() })
                 is UiState.Ready -> if (aktivna == 0) {
-                    ReadyContent(s) { upravovana = it }
+                    ReadyContent(s) { upravovana = UpravaKm(it.station, it.oneWayKm, it.distanceSource) }
                 } else {
-                    CzCenyContent(s)
+                    CzCenyContent(s) { upravovana = UpravaKm(it.station, it.oneWayKm, it.distanceSource) }
                 }
             }
         }
     }
 
-    upravovana?.let { savings ->
+    // Jeden dialóg pre obe záložky a jeden zápis (manualKm pod kľúčom pumpy):
+    // číslo zadané v CZ cenách platí aj v Porovnaní a naopak.
+    upravovana?.let { uprava ->
         DistanceDialog(
-            savings = savings,
-            hasManual = config.manualKm.containsKey(savings.station.manualKey),
+            uprava = uprava,
+            hasManual = config.manualKm.containsKey(uprava.station.manualKey),
             onDismiss = { upravovana = null },
             onSave = { km ->
-                vm.setManualKm(savings.station.manualKey, km)
+                vm.setManualKm(uprava.station.manualKey, km)
                 upravovana = null
             },
             onReset = {
-                vm.setManualKm(savings.station.manualKey, null)
+                vm.setManualKm(uprava.station.manualKey, null)
                 upravovana = null
             },
         )
     }
 }
+
+/**
+ * Čo dialóg o pumpe potrebuje vedieť — z Porovnania aj z CZ cien.
+ * [oneWayKm] a [source] sú null, keď cestu k pumpe appka nepozná.
+ */
+internal data class UpravaKm(
+    val station: CzStation,
+    val oneWayKm: Double?,
+    val source: DistanceSource?,
+)
 
 /**
  * Ručná oprava vzdialenosti k jednej pumpe.
@@ -197,14 +210,14 @@ fun MainScreen(
  */
 @Composable
 private fun DistanceDialog(
-    savings: StationSavings,
+    uprava: UpravaKm,
     hasManual: Boolean,
     onDismiss: () -> Unit,
     onSave: (Double) -> Unit,
     onReset: () -> Unit,
 ) {
-    var text by remember(savings.station.identity) {
-        mutableStateOf(intFmt.format(savings.oneWayKm))
+    var text by remember(uprava.station.identity) {
+        mutableStateOf(uprava.oneWayKm?.let { intFmt.format(it) }.orEmpty())
     }
     // Prijmi aj čiarku — slovenská klávesnica ju dá skôr než bodku.
     val km = text.replace(',', '.').trim().toDoubleOrNull()
@@ -216,12 +229,15 @@ private fun DistanceDialog(
         text = {
             Column {
                 Text(
-                    text = "${savings.station.name} • ${savings.station.town}",
+                    text = "${uprava.station.name} • ${uprava.station.town}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = when (savings.distanceSource) {
+                    text = when (uprava.source) {
+                        null ->
+                            "Cestu k tejto pumpe zatiaľ nepoznám — kým ju nezadáš, " +
+                                "do porovnania sa nezaráta."
                         DistanceSource.MANUAL -> "Teraz počítam s tvojím číslom."
                         DistanceSource.MEASURED ->
                             "Teraz počítam s nameranou cestou k tejto pumpe."
@@ -248,7 +264,8 @@ private fun DistanceDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 )
                 Text(
-                    text = "Počíta sa cesta tam aj späť, teda dvojnásobok.",
+                    text = "Počíta sa cesta tam aj späť, teda dvojnásobok. " +
+                        "Platí v Porovnaní aj v CZ cenách.",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.padding(top = 8.dp),
@@ -288,7 +305,7 @@ private fun ReadyContent(
                 Text(
                     text = "Pumpy bez zistenej cesty autom: ${state.bezVzdialenosti} — " +
                         "do porovnania sa nerátajú. Pri ďalšom obnovení sa trasa " +
-                        "skúsi znova; vidíš ich v záložke CZ ceny.",
+                        "skúsi znova; v záložke CZ ceny im km môžeš zadať ručne.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     modifier = Modifier.padding(horizontal = 4.dp),

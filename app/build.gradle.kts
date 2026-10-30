@@ -61,8 +61,10 @@ android {
         // 1.25 (30. 10. 2026, TANKOMAT-9): ziadna vzdusna ciara — pumpy mimo
         // tabulky dostanu trasu autom z OSRM (drzi sa natrvalo v trasy.json),
         // okruh hladania plati po ceste.
-        versionCode = 26
-        versionName = "1.25"
+        // 1.26 (30. 10. 2026, TANKOMAT-10): rucna oprava km aj v zalozke CZ ceny
+        // — ten isty dialog a ten isty zapis (manualKm), plati v oboch zalozkach.
+        versionCode = 27
+        versionName = "1.26"
 
         buildConfigField("String", "NAS_HOST", nasField("NAS_HOST"))
         buildConfigField("String", "NAS_SHARE", nasField("NAS_SHARE"))

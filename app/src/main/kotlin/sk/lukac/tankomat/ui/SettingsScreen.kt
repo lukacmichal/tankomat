@@ -276,7 +276,7 @@ private fun TownsSection(config: UserConfig, vm: MainViewModel) {
         Text(
             text = "Mestá, kde poznáš vzdialenosť po ceste. Pumpa v takom meste, " +
                 "ktorú appka nemá v tabuľke nameraných vzdialeností, dostane tvoje " +
-                "číslo namiesto hrubého odhadu zo vzdušnej čiary. " +
+                "číslo, keď sa trasu autom k nej nepodarí zistiť. " +
                 "Polomer hľadania: ${config.searchRadiusKm.toInt()} km.",
             style = MaterialTheme.typography.bodyMedium,
         )
