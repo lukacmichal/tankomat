@@ -63,8 +63,8 @@ android {
         // okruh hladania plati po ceste.
         // 1.26 (30. 10. 2026, TANKOMAT-10): rucna oprava km aj v zalozke CZ ceny
         // — ten isty dialog a ten isty zapis (manualKm), plati v oboch zalozkach.
-        versionCode = 27
-        versionName = "1.26"
+        versionCode = 28
+        versionName = "1.27"
 
         buildConfigField("String", "NAS_HOST", nasField("NAS_HOST"))
         buildConfigField("String", "NAS_SHARE", nasField("NAS_SHARE"))
