@@ -238,16 +238,9 @@ data class UserConfig(
      * najkratšou. Toto je jeho posledné slovo a má prednosť pred všetkým.
      */
     val manualKm: Map<String, Double> = emptyMap(),
-    /**
-     * Stiahnuť ceny raz denne o [rannaHodina] — **vždy len po Wi-Fi**.
-     *
-     * Zapnuté je predvolene: appka dovtedy na pozadí nesťahovala nič, takže
-     * ráno pri odchode ukazovala včerajšie ceny. Sľub „cez mobilné dáta nič"
-     * to neruší — beh čaká na Wi-Fi (`RannaObnova`).
-     */
-    val rannaObnova: Boolean = true,
-    /** Hodina, o ktorej sa ráno sťahuje (0–23). */
-    val rannaHodina: Int = 6,
+    // `rannaObnova` a `rannaHodina` (ranné sťahovanie o 6:00) sú od 1.28 preč
+    // (TANKOMAT-11) — ceny len po ↻. V uloženom JSON-e ich ešte nájde
+    // `ignoreUnknownKeys` a pri ďalšom zápise zmiznú.
     /** Zapnutá záložka „CZ ceny" — pumpy v okolí s cenami z benzin.cz, bez SK. */
     val showCzPrices: Boolean = false,
     /**
@@ -316,5 +309,11 @@ sealed interface UiState {
          */
         val bezVzdialenosti: Int = 0,
     ) : UiState
+
+    /**
+     * Posledný sken je pre iné palivo než [fuel] z Nastavení. Ceny pre [fuel]
+     * sa stiahnu až po ↻ — appka sama nesťahuje nič (TANKOMAT-11).
+     */
+    data class InePalivo(val fuel: FuelType) : UiState
     data class Error(val message: String) : UiState
 }

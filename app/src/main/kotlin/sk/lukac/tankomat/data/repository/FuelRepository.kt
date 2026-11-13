@@ -27,8 +27,7 @@ class ScrapeFormatException(source: String) : Exception(
  *
  * Podstatné je, čo sa vtedy NEstane: prázdny sken sa neuloží. Posledné
  * stiahnuté ceny ostávajú na disku a appka ich ukazuje ďalej — inak by jeden
- * neúspešný pokus (každé ráno beží jeden sám) zmazal jediné čísla, ktoré
- * človek v aute bez signálu má.
+ * neúspešný pokus zmazal jediné čísla, ktoré človek v aute bez signálu má.
  */
 class NoDataException(val dovod: String) : Exception(
     "Ceny z benzin.cz sa nepodarilo stiahnuť: $dovod.",

@@ -101,7 +101,6 @@ fun SettingsScreen(vm: MainViewModel, onBack: () -> Unit) {
             item { TownsSection(config, vm) }
             item { ManualKmSection(config, vm) }
             item { CzPricesSection(config, vm) }
-            item { StahovanieSection(config, vm) }
             item { PrenosSection() }
             item { UpdateSection(config, vm) }
         }
@@ -130,51 +129,6 @@ private fun CzPricesSection(config: UserConfig, vm: MainViewModel) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
         )
-    }
-}
-
-@Composable
-private fun StahovanieSection(config: UserConfig, vm: MainViewModel) {
-    SettingsCard("Sťahovanie") {
-        SwitchRow(
-            label = "Stiahnuť ráno cez Wi-Fi",
-            description = "Zapnuté = raz denne o zvolenej hodine sa stiahnu " +
-                "najnovšie ceny, ale výhradne cez Wi-Fi. Keď v tú hodinu Wi-Fi " +
-                "nie je, sťahovanie počká na najbližšiu — cez mobilné dáta sa " +
-                "nespustí nikdy. Posledné stiahnuté ceny medzitým platia ďalej " +
-                "a nezmažú sa.",
-            checked = config.rannaObnova,
-            onChange = { vm.updateConfig { c -> c.copy(rannaObnova = it) } },
-        )
-        if (config.rannaObnova) {
-            HodinaRow(
-                hodina = config.rannaHodina,
-                onChange = { vm.updateConfig { c -> c.copy(rannaHodina = it) } },
-            )
-        }
-    }
-}
-
-/**
- * Hodina po jednej hore-dole.
- *
- * Minuty tu nie su zamerne: presnu minutu WorkManager aj tak nesluby — pracu
- * spusta v okne a ked v tu hodinu nie je Wi-Fi, caka na nu.
- */
-@Composable
-private fun HodinaRow(hodina: Int, onChange: (Int) -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Text("O ktorej hodine", modifier = Modifier.weight(1f))
-        OutlinedButton(onClick = { onChange(((hodina - 1) + 24) % 24) }) { Text("−") }
-        Text(
-            text = if (hodina < 10) "0$hodina:00" else "$hodina:00",
-            style = MaterialTheme.typography.titleMedium,
-        )
-        OutlinedButton(onClick = { onChange((hodina + 1) % 24) }) { Text("+") }
     }
 }
 

@@ -160,6 +160,7 @@ fun MainScreen(
                 is UiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
+                is UiState.InePalivo -> InePalivoMessage(s, onRefresh = { vm.refresh() })
                 is UiState.Error -> ErrorMessage(s.message, onRetry = { vm.refresh() })
                 is UiState.Ready -> if (aktivna == 0) {
                     ReadyContent(s) { upravovana = UpravaKm(it.station, it.oneWayKm, it.distanceSource) }
@@ -484,6 +485,27 @@ internal fun MbenzinOdkaz() {
 private fun EmptyMessage(text: String) {
     Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+/**
+ * Palivo v Nastaveniach sa zmenilo a pre nové ešte nie sú ceny. Appka ich
+ * sama nestiahne (TANKOMAT-11) — tlačidlo robí to isté čo ↻ hore.
+ */
+@Composable
+private fun InePalivoMessage(state: UiState.InePalivo, onRefresh: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "Ceny pre ${state.fuel.labelSk} zatiaľ nie sú stiahnuté.",
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        Button(onClick = onRefresh, modifier = Modifier.padding(top = 16.dp)) {
+            Text("Stiahnuť ceny")
+        }
     }
 }
 

@@ -63,16 +63,22 @@ android {
         // okruh hladania plati po ceste.
         // 1.26 (30. 10. 2026, TANKOMAT-10): rucna oprava km aj v zalozke CZ ceny
         // — ten isty dialog a ten isty zapis (manualKm), plati v oboch zalozkach.
-        versionCode = 28
-        versionName = "1.27"
+        // 1.27 (3. 11. 2026, IKONY-1): nova ikonka (auticko pri pumpe).
+        // 1.28 (11. 11. 2026, TANKOMAT-11): ziadne ranne stahovanie — ceny len
+        // po ↻ alebo potiahnuti, ani zmena paliva nic nestiahne; rozvrh zo
+        // starsich verzii sa pri starte zrusi.
+        // 1.29 (12. 11. 2026): kluc k mbenzin.cz uz nie je v APK — appka si ho
+        // stiahne z NAS-u (kluce.txt, Kluce.kt, docs/shared-standard.md 2.2b).
+        versionCode = 30
+        versionName = "1.29"
 
         buildConfigField("String", "NAS_HOST", nasField("NAS_HOST"))
         buildConfigField("String", "NAS_SHARE", nasField("NAS_SHARE"))
         buildConfigField("String", "NAS_USER", nasField("NAS_USER"))
         buildConfigField("String", "NAS_PASS", nasField("NAS_PASS"))
-        // Osobny kluc k mbenzin.cz (28. 10. 2026) — v APK z rovnakeho dovodu
-        // ako heslo k NAS-u; posiela sa len v hlavicke, nikdy v adrese.
-        buildConfigField("String", "MBENZIN_KLIC", nasField("MBENZIN_KLIC"))
+        // Osobny kluc k mbenzin.cz (MBENZIN_KLIC) sem NEPATRI: z APK by ho
+        // vytiahol kazdy, kto ma subor v ruke. Nahra ho nahraj-na-nas.ps1
+        // do Tankomat\kluce.txt a appka si ho stiahne sama (AppContainer).
     }
 
     buildTypes {

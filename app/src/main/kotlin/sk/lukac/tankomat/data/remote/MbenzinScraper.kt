@@ -9,7 +9,6 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import sk.lukac.tankomat.BuildConfig
 import sk.lukac.tankomat.data.model.CzStation
 import sk.lukac.tankomat.data.model.CzTownConfig
 import sk.lukac.tankomat.data.model.FuelPrice
@@ -33,6 +32,7 @@ import java.time.temporal.ChronoUnit
  *
  * Prístup je cez osobný kľúč (od 28. 10. 2026) v hlavičke `X-Mbenzin-Klic`,
  * nikdy v adrese. Podmienka kľúča: pri cenách uvádzať „Ceny: mbenzin.cz".
+ * Kľúč nie je v APK (od 1.29): [dajKluc] ho berie z NAS-u, viď AppContainer.
  *
  * Čo mapa nemá:
  *  • **obec a ulicu s diakritikou** — vyčítajú sa z adresy detailu pumpy
@@ -43,15 +43,20 @@ import java.time.temporal.ChronoUnit
  *    28. 10. 2026: ceny staré 4 dni boli zelené, 13 dní oranžová, 19 dní
  *    červená.
  */
-class MbenzinScraper(private val klic: String = BuildConfig.MBENZIN_KLIC) {
+class MbenzinScraper(private val dajKluc: suspend () -> String) {
+
+    /** Pevný kľúč — pre testy nad fixtures. */
+    constructor(klic: String) : this({ klic })
 
     suspend fun fetchStations(
         fuel: FuelType,
         radiusKm: Double,
         towns: List<CzTownConfig>,
     ): List<CzStation> {
+        val klic = dajKluc()
         check(klic.isNotBlank()) {
-            "Appka nemá prístupový kľúč k mbenzin.cz (MBENZIN_KLIC v nas-credentials.local)."
+            "Appka ešte nemá kľúč k mbenzin.cz. Stiahne si ho z NAS-u, keď bude " +
+                "telefón doma na Wi-Fi (kluce.txt v priečinku Tankomat)."
         }
         val json = HttpClient.fetchText(
             url = "$BASE/Mapa-cen/data?fuel=${palivo(fuel)}&ccs=0",

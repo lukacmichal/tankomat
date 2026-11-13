@@ -47,7 +47,7 @@ v sekcii *Self-update* nižšie).
 
 Testy bežia na JVM (bez emulátora aj bez kľúča) a overujú parsery proti
 uloženým odpovediam v `app/src/test/resources/fixtures/` (vzorka dát mapy
-mbenzin.cz, stránka dalioil.sk). Aktuálne ich je **69**.
+mbenzin.cz, stránka dalioil.sk). Aktuálne ich je **63**.
 
 ## Architektúra
 
@@ -175,15 +175,16 @@ appka ťa na tú obrazovku pošle sama.
 
 | Zdroj | URL | Kedy sa volá | Pozn. |
 |---|---|---|---|
-| mbenzin.cz | `/Mapa-cen/data?fuel=…` | ručné ↻ + ranný beh | JSON mapy cien, celé Česko pre jedno palivo; osobný kľúč v hlavičke |
+| mbenzin.cz | `/Mapa-cen/data?fuel=…` | len ručné ↻ | JSON mapy cien, celé Česko pre jedno palivo; osobný kľúč v hlavičke |
 | dalioil.sk | `/{mesto}/` | len ručné ↻ | ceny v `<img alt="">` |
 | ČNB | `denni_kurz.txt` | len ručné ↻ | pipe-delimited plain text |
 | OSRM | `/table/v1/driving/…` | pri obnovení, len pre pumpy mimo tabuľky bez uloženej trasy | cesta autom od domu, ~45 B odpovede |
 | NAS (SMB) | `\\{host}\{share}` | len ručné tlačidlo | self-update, knižnica SMBJ |
 
 Posledný úspešný sken sa ukladá na disk (`filesDir/last_snapshot.json`) —
-po otvorení appky sa hneď zobrazí s časom „Posledný sken: …". Okrem ranného
-behu po Wi-Fi (nižšie) sa nič nesťahuje samo; nové dáta až po stlačení ↻.
+po otvorení appky sa hneď zobrazí s časom „Posledný sken: …". Nič sa
+nesťahuje samo — ani na Wi-Fi, ani po zmene paliva; nové dáta až po stlačení
+↻ alebo potiahnutí dole (od 1.28, viď nižšie).
 
 **Prístupový kľúč k mbenzin.cz (od 28. 10. 2026):** osobný kľúč, ktorý
 mbenzin.cz vydal pre túto appku. Podmienka: pri cenách uvádzať
@@ -209,40 +210,41 @@ zostáva na disku, takže po reštarte appky staré dáta uvidíš.
 - **Nová pumpa nemá presnú vzdialenosť** — kým sa tabuľka nepregeneruje,
   dostane vzdialenosť svojej obce a karta to prizná slovom „odhad".
 - **Nepublikuje sa nikam** — len osobné použitie. Scraping má rozumný
-  User-Agent a okrem jedného ranného behu denne (nižšie) beží výhradne pri
-  ručnom obnovení, takže žiadny rate-limit incident.
+  User-Agent a beží výhradne pri ručnom obnovení, takže žiadny rate-limit
+  incident.
 
-## Ranné sťahovanie cien (od 7. 9. 2026)
+## Žiadne sťahovanie na pozadí (od 1.28)
 
-Raz denne o pevnej hodine (predvolene **6:00**, meniteľné v Nastaveniach →
-*Sťahovanie*) si appka stiahne nové ceny sama — **výhradne cez Wi-Fi**.
-Dovtedy na pozadí nesťahovala nič, takže ráno pri odchode ukazovala včerajšie
-čísla; a práve ráno sa človek rozhoduje, či pôjde tankovať do Čiech.
+Ceny sa sťahujú **len vtedy, keď ich obnovíš** — ↻ hore alebo potiahnutím
+dole. Appka na pozadí nesťahuje nič, ani na Wi-Fi, ani po zmene paliva
+v Nastaveniach (vtedy povie, že pre nové palivo ceny zatiaľ nie sú
+stiahnuté, a ponúkne tlačidlo *Stiahnuť ceny*).
 
-Tri veci, na ktorých to stojí (`RannaObnova.kt`):
+Od 7. 9. 2026 (1.18) do 1.27 si appka stiahla ceny sama raz denne o 6:00,
+výhradne cez Wi-Fi. Keď v tú hodinu Wi-Fi nebola, beh počkal na najbližšiu
+— preto sa ceny menili „samy od seba, stačí byť na Wi-Fi". Používateľ to
+11. 11. 2026 zrušil (TANKOMAT-11): *„nech sa cena aktualizuje len vtedy, keď
+ja tú cenu obnovím"*. Sekcia *Sťahovanie* v Nastaveniach je preč a
+`RannaObnova.kt` už len pri každom štarte zruší rozvrh, ktorý na telefóne
+ostal po starej verzii (WorkManager ho pri aktualizácii appky nezahodí).
 
-1. **`NetworkType.UNMETERED`** nie je šetrenie, je to celý zmysel rozvrhu.
-   Keď v tú hodinu Wi-Fi nie je, WorkManager beh **nezahodí ani nepustí cez
-   SIM** — počká na najbližšiu Wi-Fi. Cez mobilné dáta sa teda na pozadí
-   nestiahne nikdy nič.
-2. **Posledný sken leží na disku a platí ďalej.** Čakanie na Wi-Fi nikoho
-   neoberá o čísla — appka ukazuje posledné známe ceny aj v aute bez signálu.
-3. **Prázdny výsledok sa neuloží.** Keď sa neozve ani jedno mesto,
+Čo z ranného behu ostalo, lebo platí aj pre ručné ↻:
+
+1. **Posledný sken leží na disku a platí ďalej** — appka ukazuje posledné
+   známe ceny aj v aute bez signálu.
+2. **Prázdny výsledok sa neuloží.** Keď sa neozve ani jedno mesto,
    `FuelRepository` skončí výnimkou (`NoDataException`) namiesto toho, aby
    prepísal posledné dobré ceny prázdnom. Rovnako pri výpadku `dalioil.sk`:
    použije sa **posledná skutočne stiahnutá** SK cena, nie vymyslený fallback
-   (1,50/1,55/0,80) — ten by sa teraz, keď sťahovanie beží aj bez človeka,
-   dostal do verdiktu bez toho, aby o tom niekto vedel.
-
-Prenesené bajty sa počítajú aj z ranného behu (`Prenos.odovzdaj` na konci
-pracovníka) — inak by v počítadle chýbalo práve to, čo appka stiahla sama.
+   (1,50/1,55/0,80).
 
 ## Rozšírenia, ktoré dávajú zmysel
 
 - Pridať Veľké Karlovice / Vsetín pre ľudí žijúcich severnejšie.
-- Notifikácia, keď cena na obľúbenej pumpe klesne pod prah (WorkManager).
 - História cien (jednoduchý SQLite + line chart cez Vico).
-- Auto-fetch raz za 24 h cez `PeriodicWorkRequest`.
+
+Automatické sťahovanie (raz za deň, upozornenie na pokles ceny) **nie** —
+používateľ chce ceny len po vlastnom ↻.
 
 ## Licencia
 

@@ -18,7 +18,6 @@ import sk.lukac.tankomat.data.model.PriceFreshness
 import sk.lukac.tankomat.data.model.StationDistances
 import sk.lukac.tankomat.data.model.UiState
 import sk.lukac.tankomat.data.model.UserConfig
-import sk.lukac.tankomat.RannaObnova
 import sk.lukac.tankomat.data.remote.SmbUpdater
 import sk.lukac.tankomat.data.repository.FuelRepository
 import sk.lukac.tankomat.data.repository.NoDataException
@@ -53,6 +52,8 @@ class MainViewModel(
     private val userSettings: UserSettings,
     private val updater: SmbUpdater,
     private val appContext: Context,
+    /** Kľúče z NAS-u (AppContainer.stiahniKluce); tichá kontrola ich obnoví. */
+    private val stiahniKluce: suspend () -> Boolean = { false },
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
@@ -84,7 +85,7 @@ class MainViewModel(
         viewModelScope.launch {
             val snapshot = repository.lastSnapshot() ?: return@launch
             if (_uiState.value is UiState.Idle) {
-                _uiState.value = buildReady(snapshot, userSettings.config.first())
+                _uiState.value = zoSkenu(snapshot, userSettings.config.first())
             }
         }
 
@@ -112,6 +113,10 @@ class MainViewModel(
 
             val (code, name) = remote
             _remoteVersion.value = "$name ($code)"
+
+            // NAS odpovedá — vezmi aj kľúč k mbenzin.cz (Kluce.kt). Tak sa do
+            // telefónu dostane kľúč vymenený cez `nahraj-na-nas.ps1 -LenKluce`.
+            stiahniKluce()
 
             val current = ApkInstaller.currentVersionCode(appContext)
             if (code > current && _updateState.value is UpdateState.Idle) {
@@ -206,19 +211,29 @@ class MainViewModel(
         viewModelScope.launch {
             userSettings.update(transform)
             val updated = userSettings.config.first()
-            // Zmena rannej hodiny má platiť hneď, nie až po reštarte appky.
-            RannaObnova.naplanuj(appContext, updated.rannaObnova, updated.rannaHodina)
             val snapshot = repository.lastSnapshot() ?: return@launch
-            // benzin.cz posiela ceny po palivách. Iné palivo v skene nie je,
-            // takže prepočet by ukázal prázdny zoznam — treba jeden dopyt.
-            if (snapshot.mbenzinFuel != updated.fuelType) {
-                refresh()
-                return@launch
-            }
-            // Inak prepočítaj z posledného skenu (bez siete).
-            _uiState.value = buildReady(snapshot, updated)
+            // Prepočítaj z posledného skenu (bez siete) — ani zmena paliva
+            // nič nesťahuje, ceny len po ↻ (TANKOMAT-11).
+            _uiState.value = zoSkenu(snapshot, updated)
         }
     }
+
+    /**
+     * Posledný sken prepočítaný podľa [config] — alebo [UiState.InePalivo],
+     * keď je sken pre iné palivo.
+     *
+     * benzin.cz posiela ceny po palivách, iné palivo v skene nie je. Do 1.27
+     * sa po zmene paliva rovno stiahlo nové; od 1.28 sa nesťahuje nič, kým
+     * človek nestlačí ↻ (TANKOMAT-11: „nech sa cena aktualizuje len vtedy,
+     * keď ja tú cenu obnovím"). Prepočet cudzieho paliva by ukázal prázdny
+     * zoznam, akoby v okolí nebola žiadna pumpa — preto vlastný stav.
+     */
+    private fun zoSkenu(snapshot: FuelRepository.Snapshot, config: UserConfig): UiState =
+        if (snapshot.mbenzinFuel != config.fuelType) {
+            UiState.InePalivo(config.fuelType)
+        } else {
+            buildReady(snapshot, config)
+        }
 
     private fun buildReady(
         snapshot: FuelRepository.Snapshot,
@@ -290,6 +305,7 @@ class MainViewModel(
                     userSettings = app.container.userSettings,
                     updater = app.container.smbUpdater,
                     appContext = app.applicationContext,
+                    stiahniKluce = app.container::stiahniKluce,
                 )
             }
         }
