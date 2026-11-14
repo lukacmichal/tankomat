@@ -188,11 +188,15 @@ nesťahuje samo — ani na Wi-Fi, ani po zmene paliva; nové dáta až po stlač
 
 **Prístupový kľúč k mbenzin.cz (od 28. 10. 2026):** osobný kľúč, ktorý
 mbenzin.cz vydal pre túto appku. Podmienka: pri cenách uvádzať
-„Ceny: mbenzin.cz" (appka to píše pod cenami). Kľúč **nie je v kóde** —
-Gradle ho pri builde načíta z `nas-credentials.local` (`MBENZIN_KLIC`) do
-`BuildConfig` a posiela sa len v hlavičke, nikdy v adrese ani v logu.
-Pri nadmernom používaní ho mbenzin.cz obmedzí alebo zruší, preto
-`HttpClient` drží odpoveď 30 minút a opakované ↻ nič nové nesťahuje.
+„Ceny: mbenzin.cz" (appka to píše pod cenami). Kľúč **nie je v kóde ani
+v APK** (od 1.29) — leží na NAS-e vedľa APK v `kluce.txt` (`MBENZIN_KLIC`),
+appka si ho stiahne pri prvom ↻, keď ho ešte nemá, a drží ho v šifrovaných
+nastaveniach. Posiela sa len v hlavičke, nikdy v adrese ani v logu.
+
+mbenzin.cz poskytol prístup zadarmo a nemám záujem ho zneužívať. Preto sa
+ceny sťahujú len po ↻ (nikdy na pozadí) a `HttpClient` drží odpoveď
+30 minút, takže opakované ↻ nič nové nesťahuje. Pri nadmernom používaní by
+mbenzin.cz kľúč obmedzil alebo zrušil.
 
 Keď kľúč chýba alebo mbenzin.cz namiesto dát pošle stránku, appka povie, že
 kľúč asi neplatí. Keď dáta prídu, ale nedá sa z nich prečítať žiadna pumpa,

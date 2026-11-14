@@ -100,18 +100,21 @@ straight line cannot be inside it by road.
 
 Access goes through a personal key that mbenzin.cz issued for this app. The
 condition is that the prices are credited, so the app shows *Ceny: mbenzin.cz*
-under them. **The key is not in this repository.** Gradle reads `MBENZIN_KLIC`
-from `nas-credentials.local` at build time (the same local file as the NAS
-login below) and puts it into `BuildConfig`. It is sent only in a request
+under them. **The key is not in this repository or in the APK.** It sits on
+the NAS next to the APK, in `kluce.txt`; the app downloads it the first time
+it needs it and keeps it in encrypted preferences. It is sent only in a request
 header, never in the URL or a log. If the key is missing, or the site answers
 with a web page instead of data, the app says so instead of showing an empty
 list.
 
-To keep the number of requests low, a response is reused for 30 minutes, so
-pressing ↻ again does not download it again. If the request works but no
-station can be read from it, the repository raises `ScrapeFormatException`
-and the screen says the source loaded but no prices could be read, with a retry
-button. An empty screen that looks like "no results" is the one outcome worth
+mbenzin.cz provides this access free of charge, and I have no intention of
+abusing it. That is why the app downloads prices only when you press ↻ —
+never in the background — and reuses a response for 30 minutes, so pressing ↻
+again does not download it again.
+
+If the request works but no station can be read from it, the repository
+raises `ScrapeFormatException` and the screen says the source loaded but no
+prices could be read, with a retry button. An empty screen that looks like "no results" is the one outcome worth
 engineering against.
 
 ## Price freshness
@@ -141,10 +144,9 @@ sk.lukac.tankomat
 └── ui               – navigation, screens, Material 3 theme
 ```
 
-Prices are never fetched in the background except for one optional morning
-refresh at 6:00, and that one runs **only on Wi-Fi** — never on mobile data,
-even when the plan calls it unmetered. Everything else happens when you press
-↻. The last successful scan is saved to `filesDir/last_snapshot.json`, so
+Prices are never fetched in the background — not on Wi-Fi, and not after you
+change the fuel in the settings. They are downloaded only when you press ↻ or
+pull down. The last successful scan is saved to `filesDir/last_snapshot.json`, so
 opening the app shows data immediately, stamped with the time it was taken.
 
 ## Data sources
@@ -162,7 +164,7 @@ opening the app shows data immediately, stamped with the time it was taken.
 ./gradlew :app:testDebugUnitTest
 ```
 
-69 JVM tests, no emulator needed and no key needed. The parsers are tested
+66 JVM tests, no emulator needed and no key needed. The parsers are tested
 against **saved responses** in `app/src/test/resources/fixtures/` — a sample of
 the mbenzin.cz map data and a dalioil.sk page — so a parser regression shows up
 as a failing test rather than as an empty screen on the phone.
@@ -177,11 +179,11 @@ wrapper (8.10.2) is committed, so:
 ```
 
 The build never fails because of missing credentials: without
-`nas-credentials.local` the values stay empty and the app asks for the NAS
-login in its settings. The Czech prices then need a key of your own from
-mbenzin.cz, as a line `MBENZIN_KLIC=...` in that file (`app/nas-credentials.local`,
-or any path in the `NAS_CREDENTIALS` environment variable). The file is in
-`.gitignore`.
+`nas-credentials.local` (`app/nas-credentials.local`, or any path in the
+`NAS_CREDENTIALS` environment variable; the file is in `.gitignore`) the values
+stay empty and the app asks for the NAS login in its settings. The Czech prices
+then need a key of your own from mbenzin.cz, as a line `MBENZIN_KLIC=...` in
+`kluce.txt` next to the APK on the NAS.
 
 The output APK is renamed from the generic `app-debug.apk` to `tankomat.apk`,
 which is what the self-update convention below expects.
@@ -215,8 +217,8 @@ The version is never inferred from the filename, which never changes:
 
 No location permission (the starting point is a fixed address), no analytics,
 no accounts. The only key is the mbenzin.cz one described above. Outbound
-traffic is the sources above, all of it user-triggered except the morning
-refresh, plus the few hundred bytes of the update check on the local network.
+traffic is the sources above, all of it started by pressing ↻, plus the few
+hundred bytes of the update check and the key download on the local network.
 The route request sends the fixed home point and the stations' coordinates to
 the OSRM server.
 The app shows how much data it has used, split between Wi-Fi and mobile; the
